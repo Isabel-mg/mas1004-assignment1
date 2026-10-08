@@ -1,0 +1,27 @@
+{
+  "format": "mas1004-onnx-v1",
+  "labels": [
+    "converse_diamond_sole_shape",
+    "nike_air_force_circular_sole_shape",
+    "vans_honeycomb_sole_shape"
+  ],
+  "input": {
+    "name": "image",
+    "resize": 256,
+    "crop": 224,
+    "mean": [
+      0.485,
+      0.456,
+      0.406
+    ],
+    "std": [
+      0.229,
+      0.224,
+      0.225
+    ]
+  },
+  "output": {
+    "name": "logits"
+  },
+  "n_parameters": 11178051
+}

@@ -179,7 +179,11 @@ only the new last layer, and one setting of your own. Fill in this table.
 
 | tag | start | trained | epochs | lr | trainable parameters | train accuracy | test accuracy |
 |---|---|---|---|---|---|---|---|
-| | | | | | | | |
+| run | ImageNet | all layers | 10 | 0.0001 | 11,178,051 | 99.2% | 85.6% |
+| scratch | random | all layers | 10 | 0.0001 | 11,178,051 | 74.7% | 44.4% |
+| frozen | ImageNet | last layer | 10 | 0.001 | 1,539 | 88.3% | 77.8% |
+| long | ImageNet | all layers | 20 | 0.0003 | 11,178,051 | 100.0% | 84.4% |
+| clean | ImageNet | all layers | 10 | 0.0001 | 11,178,051 | 100.0% | 80.0% |
 
 Write this down:
 - The loss curve. Did the loss go down? Did it keep going down, or did it

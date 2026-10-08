@@ -8,6 +8,10 @@ Run `pytest tests/test_data.py` after you fill them in.
 """
 
 import numpy as np
+from pathlib import Path
+
+from PIL import Image
+from torchvision import transforms
 
 # Files with any other extension should be ignored.
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
@@ -20,6 +24,17 @@ RESIZE = 256                    # the shorter side is resized to this
 CROP = 224                      # then the square in the middle is cut out
 MEAN = (0.485, 0.456, 0.406)    # red, green, blue
 STD = (0.229, 0.224, 0.225)     # red, green, blue
+
+# The exact preparation ResNet18 expects, as a torchvision pipeline. Using
+# torchvision's own steps keeps prepare_image identical to the way the
+# pretrained weights were taught to read photos, so the test's reference and
+# the web page agree with us.
+_PREPARE = transforms.Compose([
+    transforms.Resize(RESIZE),        # shorter side to 256, shape kept
+    transforms.CenterCrop(CROP),      # then the middle 224 x 224
+    transforms.ToTensor(),            # divide by 255, channels first
+    transforms.Normalize(MEAN, STD),  # per channel (x - mean) / std
+])
 
 
 def prepare_image(image):
@@ -50,7 +65,7 @@ def prepare_image(image):
     The web page does these same six steps in JavaScript. If your version is
     different, the self test badge at the top of your page turns red.
     """
-    raise NotImplementedError("Problem 2: fill in prepare_image")
+    return _PREPARE(image.convert("RGB")).numpy()
 
 
 def load_folder(root):
@@ -83,7 +98,32 @@ def load_folder(root):
     Memory: every image becomes 3 x 224 x 224 numbers of 4 bytes, about 0.6 MB.
     750 images is about 450 MB. That fits on Colab and on most laptops.
     """
-    raise NotImplementedError("Problem 2: fill in load_folder")
+    root = Path(root)
+    class_names = sorted(p.name for p in root.iterdir() if p.is_dir())
+
+    rows, labels, paths = [], [], []
+    for class_index, name in enumerate(class_names):
+        files = sorted(
+            file for file in (root / name).iterdir()
+            if file.is_file() and file.suffix.lower() in IMAGE_SUFFIXES
+        )
+        for path in files:
+            try:
+                with Image.open(path) as image:
+                    image.load()
+                    prepared = prepare_image(image)
+            except Exception:
+                continue  # broken files and non-images are simply left out
+            rows.append(prepared)
+            labels.append(class_index)
+            paths.append(path)
+
+    if rows:
+        X = np.stack(rows).astype(np.float32)
+    else:
+        X = np.empty((0, 3, CROP, CROP), dtype=np.float32)
+    y = np.asarray(labels, dtype=np.int64)
+    return X, y, class_names, paths
 
 
 def split_train_test(X, y, paths, test_ratio=0.2, seed=0):
@@ -102,4 +142,21 @@ def split_train_test(X, y, paths, test_ratio=0.2, seed=0):
         up with a class that has no test images at all, and then your accuracy
         number means nothing.
     """
-    raise NotImplementedError("Problem 2: fill in split_train_test")
+    rng = np.random.default_rng(seed)
+    y = np.asarray(y)
+
+    train_index, test_index = [], []
+    for class_index in np.unique(y):
+        indices = np.where(y == class_index)[0].copy()
+        rng.shuffle(indices)
+        n_test = int(round(len(indices) * test_ratio))
+        n_test = max(1, min(n_test, len(indices) - 1))  # keep one for training
+        test_index.extend(indices[:n_test])
+        train_index.extend(indices[n_test:])
+
+    train_index = np.asarray(train_index, dtype=np.int64)
+    test_index = np.asarray(test_index, dtype=np.int64)
+    return (
+        X[train_index], y[train_index], [paths[i] for i in train_index],
+        X[test_index], y[test_index], [paths[i] for i in test_index],
+    )
