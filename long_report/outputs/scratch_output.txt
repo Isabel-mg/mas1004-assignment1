@@ -1,0 +1,30 @@
+reading C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\data\clean
+450 images, 3 classes, read in 10 s
+  converse_diamond_sole_shape 150
+  nike_air_force_circular_sole_shape 150
+  vans_honeycomb_sole_shape 150
+training on 360, testing on 90
+model has 11,178,051 parameters, 11,178,051 of them will be trained
+epoch 1/10  train loss 1.0789  train acc 0.492  test loss 1.1267  test acc 0.411
+epoch 2/10  train loss 0.8977  train acc 0.603  test loss 1.2336  test acc 0.356
+epoch 3/10  train loss 0.6801  train acc 0.722  test loss 1.0497  test acc 0.500
+epoch 4/10  train loss 0.4523  train acc 0.850  test loss 1.0235  test acc 0.544
+epoch 5/10  train loss 0.3121  train acc 0.922  test loss 1.4734  test acc 0.544
+epoch 6/10  train loss 0.1866  train acc 0.967  test loss 1.3205  test acc 0.578
+epoch 7/10  train loss 0.1024  train acc 0.972  test loss 1.3323  test acc 0.589
+epoch 8/10  train loss 0.0748  train acc 0.983  test loss 1.5848  test acc 0.567
+epoch 9/10  train loss 0.0832  train acc 0.967  test loss 2.0410  test acc 0.456
+epoch 10/10  train loss 0.2277  train acc 0.925  test loss 2.6853  test acc 0.444
+
+trained in 3.3 minutes
+train accuracy 74.7%
+test  accuracy 44.4%
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\scratch_curves.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\scratch_confusion.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\scratch_worst.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\scratch_model.pt
+
+One line for your experiment table:
+| scratch | random | all layers | 10 | 0.0001 | 11,178,051 | 74.7% | 44.4% |
+
+To put this model on your web page: python src/export_web.py --tag scratch

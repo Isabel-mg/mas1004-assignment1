@@ -17,8 +17,8 @@
 \usepackage{mas1004}
 
 \reporttitle{Assignment 1: Long report}
-\studentname{Your name}
-\studentid{Your student ID}
+\studentname{\fillin{your name}}
+\studentid{\fillin{your student id}}
 
 \begin{document}
 \makeheader
@@ -27,23 +27,40 @@
 \section*{Problem 1. Categories and images}
 
 \subsection*{Why these categories}
-\fillin{Why these categories, and why you care about them.}
+All three categories are shoes, and each search phrase names a tread pattern rather than a kind of
+shoe: \texttt{converse\_diamond\_sole\_shape}, \texttt{nike\_air\_force\_circular\_sole\_shape} and
+\texttt{vans\_honeycomb\_sole\_shape}. I chose them together because the object is the same in all
+three, so the only thing left for a classifier to work with is the geometry of the sole: the
+diamond chevron grid of a Converse, the circular pivot-point pattern of an Air Force~1, and the
+honeycomb waffle grid of a Vans.
+\fillin{I still owe two or three sentences here, in my own words, about why I care about these
+three; this part of Problem 1 is mine alone.}
 
 \subsection*{What I expected the model to use}
-\fillin{What you thought, before training, the model would use to tell them
-apart: shape, colour, texture, background, or something else.}
+\fillin{Paste the guess I wrote down in Step 1, before any training. I cannot reconstruct it from
+the repository, and the assignment wants the guess as it was written then.}
 
 \subsection*{Images per category}
-\fillin{How many images you got for each category.}
+150 images came back for each of the three phrases, 450 in all. Run 1 read
+\texttt{150 images, 3 classes} and one line per class, 150 each
+(\texttt{results/run\_output.txt}); the searches themselves are in
+\texttt{results/cleaning/temp\_logs/collect\_log.txt}.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 2. Preparing an image}
 
-\sidebyside{figures/prepare_original.jpg}{\fillin{the image as downloaded}}
-           {figures/prepare_result.png}{\fillin{what prepare\_image made of it}}
+\sidebyside{figures/prepare_original.jpg}{the image as downloaded}
+           {figures/prepare_result.png}{what \texttt{prepare\_image} made of it}
 
-\fillin{What was cut off, and an image where the crop cut off part of the
-thing you care about.}
+The picture above is \texttt{data/clean/nike\_air\_force\_circular\_sole\_shape/0009.jpg}, a
+photograph of a Nike sole that is 1600 x 566 pixels, wide and short. \texttt{prepare\_image}
+resizes its shorter side to 256, keeping the shape (723 x 256), and then cuts the middle
+224 x 224 square out of it. 499 of the 723 pixels of the long side are thrown away and only
+31.0\% of the width survives. So on a photo shaped like this one the crop keeps the middle of the
+sole and cuts off its heel end and its toe end, which is the part of the picture where the
+circular pattern is most visible. The numbers come from running
+\texttt{torchvision.transforms.Resize} and \texttt{CenterCrop} with \texttt{RESIZE} and
+\texttt{CROP} from \texttt{src/data.py}.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 3. First training runs}
@@ -53,59 +70,134 @@ thing you care about.}
 \toprule
 tag & start & trained & epochs & lr & trainable parameters & train acc. & test acc. \\
 \midrule
-\multicolumn{8}{l}{\fillin{one row per run, as run.py printed it}} \\
+run & ImageNet & all layers & 10 & 0.0001 & 11,178,051 & 99.2\% & 85.6\% \\
+scratch & random & all layers & 10 & 0.0001 & 11,178,051 & 74.7\% & 44.4\% \\
+frozen & ImageNet & last layer & 10 & 0.001 & 1,539 & 88.3\% & 77.8\% \\
+long & ImageNet & all layers & 20 & 0.0003 & 11,178,051 & 100.0\% & 84.4\% \\
 \bottomrule
 \end{tabular}
 \end{center}
 
 \picturefile{figures/run_curves.png}
 
-\fillin{Did the loss go down? Did it keep going down, or flatten out?}
+The training loss falls from 0.92 to 0.02 in the first four epochs and then stays between 0.01 and
+0.03 for the remaining six; the test loss falls from 0.56 to about 0.38 by epoch 5 and then stays
+between 0.38 and 0.42. So the loss went down and then flattened out, and it flattened on the test
+side: after epoch 5 the model is no longer learning anything that transfers to the test images, it
+is only getting better at the 360 training images. (\texttt{results/run\_output.txt}, epochs 1-10.)
 
-\fillin{The gap between train and test accuracy, and what it means.}
+The gap is 99.2\% training against 85.6\% test, 13.6 points. The model reproduces the images it
+was trained on almost exactly and still gets about one test image in seven wrong, so part of what
+it learned is the 360 training images themselves rather than the pattern that separates them.
 
 \begin{center}\picturefile[0.5\linewidth]{figures/run_confusion.png}\end{center}
 
-\fillin{Which two categories it mixes up most, and whether that surprised you.}
+The two it mixes up most are nike and vans, in both directions: of its 30 nike test images it gets
+24 right and 4 of the misses it calls vans, and of the 30 vans it gets 24 right, calling 3 of the
+misses nike and 3 converse. Converse is almost perfect (29 of 30, one called vans). That is what I
+expected rather than a surprise: the circular Air Force pattern and the honeycomb Vans pattern are
+both dense, round, textured rubber, while the diamond chevron of a Converse is the odd one out.
+(The confusion matrix of every run, printed by the same code path as
+\texttt{evaluate.confusion\_matrix} on each run's own test split, is in
+\texttt{results/confusions2.txt}.)
 
-\fillin{How far apart the test accuracies are, starting from ImageNet and from
-random numbers, and why you think that is.}
+From ImageNet weights the model reaches 85.6\%; from random numbers it reaches 44.4\%, barely above
+the 33.3\% you get by guessing one of three. That 41.2-point gap is not a training-budget artefact:
+the random-weights run gets the same 10 epochs, the same learning rate and the same 360 images.
+ImageNet weights bring edges, textures and shapes learned from over a million photographs, and my
+three classes are separated by exactly that kind of low-level texture, which 360 images cannot
+teach from nothing.
 
-\fillin{How close training only the last layer gets to training all of them.}
+Training only the last layer changes 1,539 of the 11,178,051 parameters, 0.014\% of them, and
+reaches 77.8\% against 85.6\% for the whole network. So it recovers most of the accuracy for a
+fraction of the work, but the last 7.8 points need the earlier layers to move as well.
 
 \subsection*{Output of the runs}
 \outputfile{outputs/run_output.txt}
 \outputfile{outputs/scratch_output.txt}
 \outputfile{outputs/frozen_output.txt}
-% One more line like these for the setting you chose, named by its tag.
-\fillin{the output of the run with your own setting}
+\outputfile{outputs/long_output.txt}
 
 % ---------------------------------------------------------------------------
 \section*{Problem 4. Cleaning}
 
 \subsection*{My rule}
-\fillin{Your rule, in one or two sentences, as you wrote it before you
-started.}
+An image belongs in its category only if it is an ordinary photograph in which the shoe's sole is
+the subject and the tread geometry (the diamond, circular or honeycomb pattern that names the
+class) is visible, in focus and large enough to crop a usable square from. I remove everything
+else: pictures of the whole shoe with the sole not visible, tread that is a different pattern or
+from a shoe that is not this one, images where the pattern comes from something that is not a
+shoe, drawings, logos, text or collage graphics, and duplicates of an image I have already kept.
+I wrote it down in \texttt{results/cleaning/rule.txt} before running \texttt{clean.py suspects},
+and I wrote it before removing anything.
 
 \subsection*{Three kinds of junk}
-\fillin{Three kinds of junk, with one picture of each.}
-
-% For example: \picturefile[0.3\linewidth]{figures/junk_1.jpg}
+\begin{enumerate}
+  \item A whole shoe with the sole out of frame (\texttt{no-tread}).
+        \texttt{converse\_diamond\_sole\_shape/0036.jpg} is a tidy product photo of a grey high-top
+        seen from the side. The photo is fine; there is simply no tread in it, so it cannot teach
+        the diamond pattern. This was by far the most common kind: 186 of the 246 removals.
+  \item Not a photograph at all (\texttt{not-a-photo}).
+        \texttt{nike\_air\_force\_circular\_sole\_shape/0072.jpg} is a technical drawing of a shoe
+        with measurement lines around it. It shows the shape of the sole clearly, which is exactly
+        why the first draft of my rule let it through, so the rule now says photograph.
+  \item Not the object (\texttt{wrong-object}).
+        \texttt{vans\_honeycomb\_sole\_shape/0062.jpg} is a yellow bus. Searching "honeycomb sole"
+        also returned honeycomb flooring and tiles, a box truck, and listing screenshots of vans,
+        which is why the rule now says the pattern has to come from a shoe.
+\end{enumerate}
+\picturefile[0.31\linewidth]{figures/junk_no_tread.jpg}\hfill
+\picturefile[0.31\linewidth]{figures/junk_not_a_photo.jpg}\hfill
+\picturefile[0.31\linewidth]{figures/junk_wrong_object.jpg}
 
 \subsection*{What I removed}
 \outputfile{outputs/clean_count.txt}
 
-\fillin{How many near copies it found, and what you did with them.}
+\texttt{clean.py suspects} found 22 clusters of near copies, covering 59 of the 450 images, from
+114 pairs above the 0.95 similarity at which it calls two images a near copy. One image of each
+cluster had to go, so 37 of those 59 came out: 22 of them with the reason \texttt{duplicate} and
+the other 15 because they had already gone for a stronger reason (\texttt{no-tread} or
+\texttt{not-a-photo}). The pairs are drawn in \texttt{figures/copies.png}. The biggest cluster was
+16 nearly identical photographs of the same brown sole in vans (0001, 0002, 0003, 0005, 0007, 0009,
+0010, 0015-0018 and 0021-0025): I kept 0003 and removed the other 15. The clusters come from a
+union-find over the \texttt{copy of} rows of
+\texttt{results/cleaning/suspects/suspects.csv}.
 
-\fillin{Of the first 20 suspects in each class, how many you removed. Whether
-the suspects included junk you had missed, and whether you found junk it did
-not list.}
+For each class the tool also listed the images whose own label it found least likely. I removed 12
+of the first 20 suspects in converse, 13 in nike and 7 in vans; all 60 are listed with the reason
+each one got in \texttt{results/cleaning/first20.txt}. Two things are worth saying about that
+number. The suspects did include junk I had missed: they find the 16-copy brown-sole cluster,
+which I had read as sixteen ordinary sole photographs in my own pass, and nine of the vans top 20
+sit on the two look-sheets I did not manage to review by eye. I left those nine in rather than
+remove images I had never looked at, so they are the one part of the cleaning that is unfinished;
+they are the last block in \texttt{results/cleaning/first20.txt}. And a suspect is not junk: the
+converse images I kept from its top 20 are real photographs of real soles at unusual angles (a
+pair of soles held in a hand, four soles lined up on a table, a white sole with a star on it),
+which the network finds unlike the rest of the class even though my rule keeps them. That is the
+point the assignment makes, and it is why the tool never removed anything by itself.
 
 \subsection*{Before and after cleaning}
 \outputfile{outputs/compare.txt}
 
-\fillin{The test accuracy and the accuracy on your new images, before and
-after. If a number went down, why you think it did.}
+Test accuracy went from 85.6\% (\texttt{run}, 90 test images, before cleaning) to 80.0\%
+(\texttt{clean}, 40 test images, after): it went \emph{down} by 5.6 points, and that is a real
+result rather than a mistake in the numbers. The test sets are not the same images. Cleaning took
+246 of the 450 images out, and the test set lost its share of them, but what it lost was the easy
+part: a photograph of a yellow bus, a CAD drawing or a listing screenshot is nowhere near the
+other two classes, so an old test set full of them scores high partly for the wrong reason and
+unfairly flatters the old model. Cleaning also leaves less to learn from: the clean model trains
+on 164 images instead of 360, and its training loss is already 0.03 by epoch 5, with the test
+accuracy no longer moving after epoch 2. So the honest reading is that the 85.6\% was measured on
+a test set containing junk the model could not fail on, and the 80.0\% is measured on almost
+nothing but real sole photographs. Which of the two models is actually better is decided on the
+new images, which cleaning does not touch: \texttt{check.py --compare run clean}, printed above.
+
+The clean model's own confusion matrix, in \texttt{results/confusions2.txt}, shows where its 8 test
+errors sit: 5 of them are converse images, the class cleaning cut hardest (150 down to 62, so only
+12 test images), and it gets 7 of those 12 right, 2 wrong as nike and 3 as vans. Vans is now
+perfect (15 of 15). A class with 12 test images is a noisy measurement, so I am careful not to read
+too much into 58\%, but it does match the fact that converse is the class where my rule removed the
+largest share of images.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 5. Images from a new source}
@@ -127,10 +219,17 @@ distance, what else is in the frame.}
 % ---------------------------------------------------------------------------
 \section*{Problem 6. The demo}
 
-Address: \fillin{your GitHub Pages address}
+Address: \url{https://isabel-mg.github.io/mas1004-assignment1/} and the code is at
+\url{https://github.com/Isabel-mg/mas1004-assignment1}. The model runs inside the page, so there is
+no server and no photo leaves the machine. The badge is green: the self-test that the export wrote
+reports that the page and Python agree with a largest gap of 0.0000, and
+\texttt{docs/model.onnx} is 44.8 MB with 11,178,051 parameters.
 
-\fillin{What happens when you show it something that is none of your
-categories.}
+The page has no "none of these" answer. It always returns the single class with the highest
+probability, whatever you show it, so a picture of something else comes back as whichever of the
+three sole patterns is nearest.
+\fillin{Write here what you actually saw when you showed the live page something that is none of
+the three categories, and the confidence it printed; this has to be your own test, on your phone.}
 
 % ---------------------------------------------------------------------------
 \section*{Problem 7. What the model looks at}

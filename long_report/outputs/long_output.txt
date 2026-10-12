@@ -1,0 +1,40 @@
+reading data/raw
+450 images, 3 classes, read in 7 s
+  converse_diamond_sole_shape 150
+  nike_air_force_circular_sole_shape 150
+  vans_honeycomb_sole_shape 150
+training on 360, testing on 90
+model has 11,178,051 parameters, 11,178,051 of them will be trained
+epoch 1/20  train loss 0.6537  train acc 0.706  test loss 1.2187  test acc 0.656
+epoch 2/20  train loss 0.1163  train acc 0.967  test loss 0.7548  test acc 0.789
+epoch 3/20  train loss 0.0773  train acc 0.986  test loss 0.6272  test acc 0.833
+epoch 4/20  train loss 0.0447  train acc 0.989  test loss 0.6131  test acc 0.844
+epoch 5/20  train loss 0.0646  train acc 0.978  test loss 1.2986  test acc 0.711
+epoch 6/20  train loss 0.0279  train acc 0.994  test loss 0.8115  test acc 0.800
+epoch 7/20  train loss 0.0136  train acc 0.997  test loss 0.5054  test acc 0.811
+epoch 8/20  train loss 0.0379  train acc 0.994  test loss 0.6647  test acc 0.778
+epoch 9/20  train loss 0.0534  train acc 0.978  test loss 0.8849  test acc 0.778
+epoch 10/20  train loss 0.0438  train acc 0.983  test loss 1.0568  test acc 0.767
+epoch 11/20  train loss 0.1396  train acc 0.964  test loss 0.9052  test acc 0.778
+epoch 12/20  train loss 0.1561  train acc 0.942  test loss 0.7188  test acc 0.789
+epoch 13/20  train loss 0.0675  train acc 0.975  test loss 0.9081  test acc 0.756
+epoch 14/20  train loss 0.0248  train acc 0.992  test loss 0.4302  test acc 0.856
+epoch 15/20  train loss 0.0254  train acc 0.994  test loss 0.4874  test acc 0.789
+epoch 16/20  train loss 0.0055  train acc 1.000  test loss 0.3858  test acc 0.844
+epoch 17/20  train loss 0.0025  train acc 1.000  test loss 0.3558  test acc 0.844
+epoch 18/20  train loss 0.0022  train acc 1.000  test loss 0.3509  test acc 0.844
+epoch 19/20  train loss 0.0023  train acc 1.000  test loss 0.3997  test acc 0.856
+epoch 20/20  train loss 0.0054  train acc 0.997  test loss 0.4007  test acc 0.844
+
+trained in 256.4 minutes
+train accuracy 100.0%
+test  accuracy 84.4%
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\long_curves.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\long_confusion.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\long_worst.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\long_model.pt
+
+One line for your experiment table:
+| long | ImageNet | all layers | 20 | 0.0003 | 11,178,051 | 100.0% | 84.4% |
+
+To put this model on your web page: python src/export_web.py --tag long

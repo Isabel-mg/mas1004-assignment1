@@ -1,0 +1,30 @@
+reading C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\data\clean
+450 images, 3 classes, read in 7 s
+  converse_diamond_sole_shape 150
+  nike_air_force_circular_sole_shape 150
+  vans_honeycomb_sole_shape 150
+training on 360, testing on 90
+model has 11,178,051 parameters, 11,178,051 of them will be trained
+epoch 1/10  train loss 0.9169  train acc 0.575  test loss 0.5621  test acc 0.756
+epoch 2/10  train loss 0.1712  train acc 0.964  test loss 0.4286  test acc 0.789
+epoch 3/10  train loss 0.0558  train acc 0.997  test loss 0.4316  test acc 0.789
+epoch 4/10  train loss 0.0213  train acc 1.000  test loss 0.4104  test acc 0.789
+epoch 5/10  train loss 0.0337  train acc 0.992  test loss 0.3857  test acc 0.844
+epoch 6/10  train loss 0.0216  train acc 1.000  test loss 0.3894  test acc 0.822
+epoch 7/10  train loss 0.0241  train acc 0.994  test loss 0.3817  test acc 0.833
+epoch 8/10  train loss 0.0113  train acc 1.000  test loss 0.4217  test acc 0.800
+epoch 9/10  train loss 0.0194  train acc 0.994  test loss 0.3819  test acc 0.822
+epoch 10/10  train loss 0.0103  train acc 0.997  test loss 0.3804  test acc 0.856
+
+trained in 3.1 minutes
+train accuracy 99.2%
+test  accuracy 85.6%
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\run_curves.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\run_confusion.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\run_worst.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\run_model.pt
+
+One line for your experiment table:
+| run | ImageNet | all layers | 10 | 0.0001 | 11,178,051 | 99.2% | 85.6% |
+
+To put this model on your web page: python src/export_web.py --tag run

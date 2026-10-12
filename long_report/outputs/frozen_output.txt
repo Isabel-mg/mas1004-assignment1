@@ -1,0 +1,30 @@
+reading C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\data\clean
+450 images, 3 classes, read in 10 s
+  converse_diamond_sole_shape 150
+  nike_air_force_circular_sole_shape 150
+  vans_honeycomb_sole_shape 150
+training on 360, testing on 90
+model has 11,178,051 parameters, 1,539 of them will be trained
+epoch 1/10  train loss 1.1243  train acc 0.408  test loss 0.9887  test acc 0.522
+epoch 2/10  train loss 0.8908  train acc 0.583  test loss 0.8236  test acc 0.644
+epoch 3/10  train loss 0.7784  train acc 0.636  test loss 0.7404  test acc 0.722
+epoch 4/10  train loss 0.6977  train acc 0.725  test loss 0.6738  test acc 0.722
+epoch 5/10  train loss 0.6101  train acc 0.786  test loss 0.6221  test acc 0.711
+epoch 6/10  train loss 0.5583  train acc 0.828  test loss 0.6031  test acc 0.744
+epoch 7/10  train loss 0.5109  train acc 0.853  test loss 0.5694  test acc 0.744
+epoch 8/10  train loss 0.5099  train acc 0.825  test loss 0.5687  test acc 0.756
+epoch 9/10  train loss 0.4777  train acc 0.833  test loss 0.5545  test acc 0.744
+epoch 10/10  train loss 0.4502  train acc 0.858  test loss 0.5407  test acc 0.778
+
+trained in 1.1 minutes
+train accuracy 88.3%
+test  accuracy 77.8%
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\frozen_curves.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\frozen_confusion.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\frozen_worst.png
+wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\frozen_model.pt
+
+One line for your experiment table:
+| frozen | ImageNet | last layer | 10 | 0.001 | 1,539 | 88.3% | 77.8% |
+
+To put this model on your web page: python src/export_web.py --tag frozen
