@@ -1,0 +1,44 @@
+MY CLEANING RULE (second round, written before running clean.py look/suspects on the new 1,168 images)
+===============================================================================
+
+An image stays only if it is an ordinary photograph of the OUTSOLE (the
+bottom) of the right shoe, where the tread pattern is visible and its shape can
+be told apart. I remove everything else.
+
+WHAT EACH CATEGORY MUST SHOW
+  converse_diamond_sole_shape          Converse sole with the diamond shape
+  nike_air_force_circular_sole_shape   Nike Air Force sole with clean lines and
+                                       circular shapes
+  vans_honeycomb_sole_shape            Vans sole with the honeycomb shape
+
+I REMOVE an image if it:
+  1. shows the full shoe and the sole is out of frame, tiny or blurred
+  2. shows something other than the outsole of a shoe (drawing, logo, text,
+     collage, listing screenshot, placeholder, patent/CAD schematic)
+  3. shows a sole that does not match the brand and the specific model sole
+     of its category
+  4. shows anything else that is not a shoe (tiles, flooring, cars, insoles,
+     a booklet alone)
+  5. shows a sole that is destroyed, covered or mixed with other objects, so
+     that no pattern or shape can be seen
+  6. is a near copy of an image I already keep
+
+I KEEP (borderline cases I decided):
+  - Angled soles, as long as part of the pattern is visible and its shape can
+    be told apart.
+  - Worn or dirty soles, unless no shape or pattern can be seen at all.
+  - Two soles in one picture, if both are the correct brand and model.
+
+REASON WORDS for `clean.py remove <class>/<file> ... --reason "<word>"`
+(copied verbatim into data/removed/log.csv, so `clean.py count` reads straight
+off this rule):
+  no-tread       rule 1, and rule 5 when the sole is covered or too worn or
+                 dirty to see any pattern
+  not-a-photo    rule 2
+  wrong-object   rule 3 (wrong brand, model or pattern) and rule 4 (not a shoe)
+  duplicate      rule 6
+  unreadable     a file the tools cannot open
+
+BUDGET: check.py wants more than 50 images per class after cleaning, and the
+biggest class must not exceed 3x the smallest. Target: at least 100 kept per
+class. Report the final counts either way.

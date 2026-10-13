@@ -1,116 +1,98 @@
-% MAS1004 Assignment 1: long report.
-%
-% You fill this in with your agent, in your repository. AGENTS.md tells the
-% agent how. Red text in the PDF is what still has to be replaced.
-%
-% - Pictures go in figures/. Copy them from results/, which is not in git.
-% - Outputs go in outputs/. run.py saves what it prints in
-%   results/<tag>_output.txt, and PLAN.md saves the other outputs in results/
-%   with `| tee results/...`. Copy them here. \outputfile{outputs/check.txt}
-%   prints a file exactly as it is. Every number in this report has to come
-%   from such an output.
-%
-% To make the PDF: compress this folder into a zip, and on Overleaf choose
-% New Project, Upload Project. Set Menu, Compiler to XeLaTeX, and Recompile.
-
+% MAS1004 Assignment 1: long report. Written with Claude Code, in the repository.
+% Numbers come from files that code printed (see outputs/). My own answers are
+% quoted from my_answers.md after a spelling and grammar check.
 \documentclass[11pt]{article}
 \usepackage{mas1004}
 
 \reporttitle{Assignment 1: Long report}
-\studentname{\fillin{your name}}
-\studentid{\fillin{your student id}}
+\studentname{Isabel Mendoza Garcia}
+\studentid{20231987}
 
 \begin{document}
 \makeheader
 
-% ---------------------------------------------------------------------------
 \section*{Problem 1. Categories and images}
-
 \subsection*{Why these categories}
-All three categories are shoes, and each search phrase names a tread pattern rather than a kind of
-shoe: \texttt{converse\_diamond\_sole\_shape}, \texttt{nike\_air\_force\_circular\_sole\_shape} and
-\texttt{vans\_honeycomb\_sole\_shape}. I chose them together because the object is the same in all
-three, so the only thing left for a classifier to work with is the geometry of the sole: the
-diamond chevron grid of a Converse, the circular pivot-point pattern of an Air Force~1, and the
-honeycomb waffle grid of a Vans.
-\fillin{I still owe two or three sentences here, in my own words, about why I care about these
-three; this part of Problem 1 is mine alone.}
+My three categories are the soles of three shoe models: \texttt{converse\_diamond\_sole\_shape}, \texttt{nike\_air\_force\_circular\_sole\_shape} and \texttt{vans\_honeycomb\_sole\_shape}. Each name is a tread pattern: the diamond grid of a Converse, the clean lines and circles of a Nike Air Force~1 and the honeycomb of a Vans.
+
+I know shoe soles can be a random category. I decided to do this because I am a dancer. For urban dances, although some don't really pay much attention, we should wear certain shoes with certain soles depending on the style. For example, hip hop needs shoes that will have grip and give steadiness to your ankles, and makes it easier to be grounded and avoid injuries. For house you might need lighter shoes to move swiftly and faster, for turns, soles with circular shapes might help, etc. I thought it would be fun to do an image classifier for soles, and find similar soles to certain brand in case one doesn't have the chance to buy the exact shoe brand or model recommended by many, but can be at least similar.
 
 \subsection*{What I expected the model to use}
-\fillin{Paste the guess I wrote down in Step 1, before any training. I cannot reconstruct it from
-the repository, and the assignment wants the guess as it was written then.}
+I wrote this guess again after the first training runs, because the guess I wrote at the start of the assignment was not saved. It is a rewritten guess, not the original.
+
+I guess it will use shape, color, and texture. Shape for the type of lines or basic shape of the sole, texture for the grid the sole has, and color as it might help identify shadows and highlights and determine a more exact shape.
 
 \subsection*{Images per category}
-150 images came back for each of the three phrases, 450 in all. Run 1 read
-\texttt{150 images, 3 classes} and one line per class, 150 each
-(\texttt{results/run\_output.txt}); the searches themselves are in
-\texttt{results/cleaning/temp\_logs/collect\_log.txt}.
+I collected the images twice. My first collection (150 images per category, 450 in all) gave only 204 usable images after cleaning (62, 67 and 75), so I collected again with more search phrases and replaced it. The first-round data is kept in \texttt{data/backup\_before\_recollect}. The second collection used several search phrases per category (150 images each), and I merged the phrases into the three categories, skipping exact duplicates:
+\begin{itemize}
+  \item Converse: ``converse shoe sole'', ``chuck taylor all star sole'', then, because too few usable images were left, ``converse chuck taylor all star outsole'', ``converse all star sole bottom view'', ``converse chuck taylor sole pattern'' and ``converse diamond tread sole''.
+  \item Nike: ``nike air force sole'', ``nike air force shoe sole'', ``nike air force outsole'' and ``nike air force outsole circular shape''.
+  \item Vans: ``vans outsole shape'', ``vans waffle sole'' and ``vans old skool honeycomb outsole''.
+\end{itemize}
+\begin{center}\small
+\begin{tabular}{lr}
+\toprule
+category & downloaded images \\
+\midrule
+converse\_diamond\_sole\_shape & 700 \\
+nike\_air\_force\_circular\_sole\_shape & 452 \\
+vans\_honeycomb\_sole\_shape & 427 \\
+\midrule
+total & 1,579 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Run 1 printed the same counts (\texttt{outputs/run\_output.txt}). The merge printed 289, 452 and 427 images after the first nine phrases; 411 Converse images were added afterwards as files 0290 to 0700.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 2. Preparing an image}
-
 \sidebyside{figures/prepare_original.jpg}{the image as downloaded}
            {figures/prepare_result.png}{what \texttt{prepare\_image} made of it}
 
-The picture above is \texttt{data/clean/nike\_air\_force\_circular\_sole\_shape/0009.jpg}, a
-photograph of a Nike sole that is 1600 x 566 pixels, wide and short. \texttt{prepare\_image}
-resizes its shorter side to 256, keeping the shape (723 x 256), and then cuts the middle
-224 x 224 square out of it. 499 of the 723 pixels of the long side are thrown away and only
-31.0\% of the width survives. So on a photo shaped like this one the crop keeps the middle of the
-sole and cuts off its heel end and its toe end, which is the part of the picture where the
-circular pattern is most visible. The numbers come from running
-\texttt{torchvision.transforms.Resize} and \texttt{CenterCrop} with \texttt{RESIZE} and
-\texttt{CROP} from \texttt{src/data.py}.
+The picture is a Nike sole from my first collection round (the folders were rebuilt later, so its file number no longer exists). It is 1600 x 566 pixels. \texttt{prepare\_image} resizes the shorter side to 256 (723 x 256) and cuts out the middle 224 x 224 square. 499 pixels of the long side are thrown away and only 31.0\% of the long side is kept (printed in \texttt{results/cleaning/prepare\_numbers.txt}).
+
+It cuts off the beginning and end of the sole, so we can see the middle, the circular part of the sole and part of the logo. The pattern was cropped but it is still something you can identify clearly.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 3. First training runs}
+All four runs used all 1,579 downloaded images, before any cleaning: 1,264 for training and 315 for testing.
 
 \begin{center}\footnotesize
 \begin{tabular}{llllrrrr}
 \toprule
 tag & start & trained & epochs & lr & trainable parameters & train acc. & test acc. \\
 \midrule
-run & ImageNet & all layers & 10 & 0.0001 & 11,178,051 & 99.2\% & 85.6\% \\
-scratch & random & all layers & 10 & 0.0001 & 11,178,051 & 74.7\% & 44.4\% \\
-frozen & ImageNet & last layer & 10 & 0.001 & 1,539 & 88.3\% & 77.8\% \\
-long & ImageNet & all layers & 20 & 0.0003 & 11,178,051 & 100.0\% & 84.4\% \\
+run & ImageNet & all layers & 10 & 0.0001 & 11,178,051 & 100.0\% & 93.3\% \\
+scratch & random & all layers & 10 & 0.0001 & 11,178,051 & 99.9\% & 65.1\% \\
+frozen & ImageNet & last layer & 10 & 0.001 & 1,539 & 87.9\% & 85.7\% \\
+long & ImageNet & all layers & 20 & 0.0003 & 11,178,051 & 100.0\% & 94.0\% \\
 \bottomrule
 \end{tabular}
 \end{center}
+The fourth run (\texttt{long}) is the setting of my own: 20 epochs and a higher learning rate (I took the recommended setting).
 
 \picturefile{figures/run_curves.png}
 
-The training loss falls from 0.92 to 0.02 in the first four epochs and then stays between 0.01 and
-0.03 for the remaining six; the test loss falls from 0.56 to about 0.38 by epoch 5 and then stays
-between 0.38 and 0.42. So the loss went down and then flattened out, and it flattened on the test
-side: after epoch 5 the model is no longer learning anything that transfers to the test images, it
-is only getting better at the 360 training images. (\texttt{results/run\_output.txt}, epochs 1-10.)
+\subsection*{The loss}
+The training loss goes from 0.50 to 0.003, so it keeps falling and gets very small. The test loss reaches its lowest value, 0.14, around epochs 3 to 5, then drifts up to 0.19. Numbers: training loss 0.5025 in epoch 1, 0.0761 in epoch 2 and 0.0034 in epoch 10; test loss lowest at 0.1408 in epoch 5 and 0.1895 in epoch 10 (\texttt{outputs/run\_output.txt}).
 
-The gap is 99.2\% training against 85.6\% test, 13.6 points. The model reproduces the images it
-was trained on almost exactly and still gets about one test image in seven wrong, so part of what
-it learned is the 360 training images themselves rather than the pattern that separates them.
+\subsection*{Training against test accuracy}
+Train accuracy is 100.0\% and test accuracy is 93.3\% (run), so train is 6.7 points higher. The model has memorised the training images almost perfectly but is less sure on images it has not seen. A gap this size means some overfitting, but the test accuracy is still high.
 
 \begin{center}\picturefile[0.5\linewidth]{figures/run_confusion.png}\end{center}
 
-The two it mixes up most are nike and vans, in both directions: of its 30 nike test images it gets
-24 right and 4 of the misses it calls vans, and of the 30 vans it gets 24 right, calling 3 of the
-misses nike and 3 converse. Converse is almost perfect (29 of 30, one called vans). That is what I
-expected rather than a surprise: the circular Air Force pattern and the honeycomb Vans pattern are
-both dense, round, textured rubber, while the diamond chevron of a Converse is the odd one out.
-(The confusion matrix of every run, printed by the same code path as
-\texttt{evaluate.confusion\_matrix} on each run's own test split, is in
-\texttt{results/confusions2.txt}.)
+\subsection*{The confusion matrix}
+The most confused classes are Converse and Vans. I am not surprised. I think those two are the most similar in terms of shape, at a certain angle or with a lot of zoom, it might get confused. Compared to the Nike model, which is very different, and also the color of the sole is mostly white instead of the brownish tone the other 2 have. Numbers from the run confusion matrix (315 test images): 8 Converse images were called Vans and 8 Vans images were called Converse. Nike was the most reliable, with 85 of 90 correct (3 called Converse, 2 called Vans).
 
-From ImageNet weights the model reaches 85.6\%; from random numbers it reaches 44.4\%, barely above
-the 33.3\% you get by guessing one of three. That 41.2-point gap is not a training-budget artefact:
-the random-weights run gets the same 10 epochs, the same learning rate and the same 360 images.
-ImageNet weights bring edges, textures and shapes learned from over a million photographs, and my
-three classes are separated by exactly that kind of low-level texture, which 360 images cannot
-teach from nothing.
+\subsection*{ImageNet start against random start}
+Starting from ImageNet gave 93.3\% test accuracy and starting from random numbers gave 65.1\%, a gap of 28.2 points. The scratch run also jumped around (test accuracy between 54\% and 67\% across epochs). A reasonable explanation is that the ImageNet weights already know how to see edges, textures and shapes, so with 1,264 training images the model only has to adjust them, while a random start has to learn everything from the same few images.
 
-Training only the last layer changes 1,539 of the 11,178,051 parameters, 0.014\% of them, and
-reaches 77.8\% against 85.6\% for the whole network. So it recovers most of the accuracy for a
-fraction of the work, but the last 7.8 points need the earlier layers to move as well.
+\subsection*{Training only the last layer}
+Training only the last layer (1,539 parameters, about 0.014\% of 11,178,051) gave 85.7\% test accuracy, against 93.3\% for training everything, so it gets within 7.6 points. Its train accuracy was also lower (87.9\% against 100\%): it did not overfit, but it could not fit the data as closely.
+
+\picturefile[0.32\linewidth]{figures/scratch_curves.png}\hfill
+\picturefile[0.32\linewidth]{figures/frozen_curves.png}\hfill
+\picturefile[0.32\linewidth]{figures/long_curves.png}
 
 \subsection*{Output of the runs}
 \outputfile{outputs/run_output.txt}
@@ -120,145 +102,216 @@ fraction of the work, but the last 7.8 points need the earlier layers to move as
 
 % ---------------------------------------------------------------------------
 \section*{Problem 4. Cleaning}
-
 \subsection*{My rule}
-An image belongs in its category only if it is an ordinary photograph in which the shoe's sole is
-the subject and the tread geometry (the diamond, circular or honeycomb pattern that names the
-class) is visible, in focus and large enough to crop a usable square from. I remove everything
-else: pictures of the whole shoe with the sole not visible, tread that is a different pattern or
-from a shoe that is not this one, images where the pattern comes from something that is not a
-shoe, drawings, logos, text or collage graphics, and duplicates of an image I have already kept.
-I wrote it down in \texttt{results/cleaning/rule.txt} before running \texttt{clean.py suspects},
-and I wrote it before removing anything.
+An image stays only if it is an ordinary photograph of the outsole of the right shoe, where the tread pattern is visible and its shape can be told apart. Each category must show: Converse, a sole with the diamond shape; Nike Air Force, a sole with clean lines and circular shapes; Vans, a sole with the honeycomb shape. I remove an image if it (1) shows the full shoe and the sole is out of frame, tiny or blurred; (2) shows something other than the outsole of a shoe (drawing, logo, text, collage, screenshot); (3) shows a sole that does not match the brand and the specific model of its category; (4) shows anything else that is not a shoe; (5) shows a sole that is destroyed, covered or mixed with other objects so that no pattern or shape can be seen; (6) is a near copy of an image I already keep. I keep angled soles as long as part of the pattern is visible and its shape can be told apart, worn or dirty soles unless no shape or pattern can be seen at all, and two soles in one picture if both are the correct brand and model. The full rule is in \texttt{outputs/rule.txt}. I wrote this rule before removing anything, and these are the rules I used for all the cleaning.
+
 
 \subsection*{Three kinds of junk}
-\begin{enumerate}
-  \item A whole shoe with the sole out of frame (\texttt{no-tread}).
-        \texttt{converse\_diamond\_sole\_shape/0036.jpg} is a tidy product photo of a grey high-top
-        seen from the side. The photo is fine; there is simply no tread in it, so it cannot teach
-        the diamond pattern. This was by far the most common kind: 186 of the 246 removals.
-  \item Not a photograph at all (\texttt{not-a-photo}).
-        \texttt{nike\_air\_force\_circular\_sole\_shape/0072.jpg} is a technical drawing of a shoe
-        with measurement lines around it. It shows the shape of the sole clearly, which is exactly
-        why the first draft of my rule let it through, so the rule now says photograph.
-  \item Not the object (\texttt{wrong-object}).
-        \texttt{vans\_honeycomb\_sole\_shape/0062.jpg} is a yellow bus. Searching "honeycomb sole"
-        also returned honeycomb flooring and tiles, a box truck, and listing screenshots of vans,
-        which is why the rule now says the pattern has to come from a shoe.
-\end{enumerate}
 \picturefile[0.31\linewidth]{figures/junk_no_tread.jpg}\hfill
 \picturefile[0.31\linewidth]{figures/junk_not_a_photo.jpg}\hfill
 \picturefile[0.31\linewidth]{figures/junk_wrong_object.jpg}
 
+Three kinds of junk, one picture of each (chosen by Claude from the removed images of my first collection round): (a) whole shoe, sole not visible (junk\_no\_tread.jpg, a silver Converse high-top seen from the side, the rule-1 junk that was the biggest group, 186 of the first 246 removals); (b) not a photo (junk\_not\_a\_photo.jpg, a labelled drawing of a Nike Air Force 1 with the sole shown as an illustration); (c) wrong object (junk\_wrong\_object.jpg, a van with a honeycomb pattern painted on it, which is where the pattern comes from something that is not a shoe).
+
 \subsection*{What I removed}
 \outputfile{outputs/clean_count.txt}
 
-\texttt{clean.py suspects} found 22 clusters of near copies, covering 59 of the 450 images, from
-114 pairs above the 0.95 similarity at which it calls two images a near copy. One image of each
-cluster had to go, so 37 of those 59 came out: 22 of them with the reason \texttt{duplicate} and
-the other 15 because they had already gone for a stronger reason (\texttt{no-tread} or
-\texttt{not-a-photo}). The pairs are drawn in \texttt{figures/copies.png}. The biggest cluster was
-16 nearly identical photographs of the same brown sole in vans (0001, 0002, 0003, 0005, 0007, 0009,
-0010, 0015-0018 and 0021-0025): I kept 0003 and removed the other 15. The clusters come from a
-union-find over the \texttt{copy of} rows of
-\texttt{results/cleaning/suspects/suspects.csv}.
+I chose to describe the rule instead of estimating a reason for each image. The removal table shows 1,291 removed as "not-kept" (I chose the images to keep by my rule, so a reason for each removed image was not recorded) and 20 as "duplicate". The report explains the rule instead.
 
-For each class the tool also listed the images whose own label it found least likely. I removed 12
-of the first 20 suspects in converse, 13 in nike and 7 in vans; all 60 are listed with the reason
-each one got in \texttt{results/cleaning/first20.txt}. Two things are worth saying about that
-number. The suspects did include junk I had missed: they find the 16-copy brown-sole cluster,
-which I had read as sixteen ordinary sole photographs in my own pass, and nine of the vans top 20
-sit on the two look-sheets I did not manage to review by eye. I left those nine in rather than
-remove images I had never looked at, so they are the one part of the cleaning that is unfinished;
-they are the last block in \texttt{results/cleaning/first20.txt}. And a suspect is not junk: the
-converse images I kept from its top 20 are real photographs of real soles at unusual angles (a
-pair of soles held in a hand, four soles lined up on a table, a white sole with a star on it),
-which the network finds unlike the rest of the class even though my rule keeps them. That is the
-point the assignment makes, and it is why the tool never removed anything by itself.
+\subsection*{Near copies}
+\texttt{clean.py suspects} listed 181 pairs of near copies (similarity above 0.95). Joined together, they form 96 groups covering 240 images; the biggest group has 11 images. That run was made on the 1,168 images that existed before I added 411 Converse images. In my keep lists I then found 20 more duplicates, which I removed (4 Converse, 11 Nike, 5 Vans) so that only one picture of each stayed. The pairs from the suspects run are drawn here:
+
+\picturefile{figures/copies.png}
+
+\subsection*{The suspects}
+I deleted almost all except for one. There were a lot of images deleted after cleaning as many downloaded were not right. from 400 it went down to just a bit less than 100 because most of it was junk, very easy to confuse with the whole shoe, or many images with watermarks. Numbers from the files: the first suspects run listed the 20 most suspicious images in each class, and all 20 in each class (Converse, Nike, Vans) ended up removed (I kept Converse image 0091. It is not among those 20: the 20 Converse suspects were 0068, 0079, 0114, 0144, 0040, 0127, 0229, 0122, 0024, 0029, 0011, 0104, 0010, 0233, 0211, 0142, 0126, 0249, 0118 and 0065. Image 0091 ranked 23rd, just outside the top 20, and the model gave it only a 14.9\% chance of being Converse, so it is a suspect that I kept because it shows the Converse pattern). That run was made before the extra 411 Converse images were added, so for Converse it covers the first 289 images. It also listed 181 near-copy pairs over all images. In my keep lists I found 20 duplicates, which were removed (4 Converse, 11 Nike, 5 Vans).
 
 \subsection*{Before and after cleaning}
 \outputfile{outputs/compare.txt}
 
-Test accuracy went from 85.6\% (\texttt{run}, 90 test images, before cleaning) to 80.0\%
-(\texttt{clean}, 40 test images, after): it went \emph{down} by 5.6 points, and that is a real
-result rather than a mistake in the numbers. The test sets are not the same images. Cleaning took
-246 of the 450 images out, and the test set lost its share of them, but what it lost was the easy
-part: a photograph of a yellow bus, a CAD drawing or a listing screenshot is nowhere near the
-other two classes, so an old test set full of them scores high partly for the wrong reason and
-unfairly flatters the old model. Cleaning also leaves less to learn from: the clean model trains
-on 164 images instead of 360, and its training loss is already 0.03 by epoch 5, with the test
-accuracy no longer moving after epoch 2. So the honest reading is that the 85.6\% was measured on
-a test set containing junk the model could not fail on, and the 80.0\% is measured on almost
-nothing but real sole photographs. Which of the two models is actually better is decided on the
-new images, which cleaning does not touch: \texttt{check.py --compare run clean}, printed above.
+\begin{center}\small
+\begin{tabular}{lrrr}
+\toprule
+ & images trained on & own test set & my 44 new images \\
+\midrule
+run (before cleaning) & 1,264 & 93.3\% (315 images) & 93.2\% (41/44) \\
+clean (after cleaning) & 214 & 94.4\% (54 images) & 95.5\% (42/44) \\
+\bottomrule
+\end{tabular}
+\end{center}
+Nothing went down. Test accuracy went from 93.3\% (run) to 94.4\% (clean), and on my 44 new photos from 93.2\% (41/44) to 95.5\% (42/44). The two test sets are not the same images, and the cleaned model trained on 268 images instead of 1,579, so the 1.1-point difference on the test set is small and could be chance (the cleaned test set is only 54 images). The comparison on the same 44 new photos is the fairer one, and it is 1 photo better.
 
-The clean model's own confusion matrix, in \texttt{results/confusions2.txt}, shows where its 8 test
-errors sit: 5 of them are converse images, the class cleaning cut hardest (150 down to 62, so only
-12 test images), and it gets 7 of those 12 right, 2 wrong as nike and 3 as vans. Vans is now
-perfect (15 of 15). A class with 12 test images is a noisy measurement, so I am careful not to read
-too much into 58\%, but it does match the fact that converse is the class where my rule removed the
-largest share of images.
+\begin{center}\picturefile[0.5\linewidth]{figures/clean_confusion.png}\end{center}
+The cleaned model's confusion matrix on its own 54 test images: Converse 14 of 16 (2 called Vans), Nike 19 of 19, Vans 18 of 19 (1 called Nike), 3 mistakes in all.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 5. Images from a new source}
-
-\fillin{Where your new images came from, and why you are sure none of them are
-among your downloads.}
+The new images came from my own shoes, my friends' shoes, and my family's shoes. I asked them to send me pictures if they had the same model of shoe and sole.
 
 \outputfile{outputs/overlap.txt}
 
-\fillin{The accuracy on your downloaded test set and on your new images, side
-by side.}
+The new images are 23 Converse, 16 Nike and 5 Vans, 44 in all (\texttt{outputs/check.txt}).
 
-\fillin{Five mistakes it was confident about, with the pictures. For each one,
-what in the image you think pushed it the wrong way.}
+\subsection*{Downloaded test set against new images}
+\begin{center}\small
+\begin{tabular}{lrr}
+\toprule
+model & downloaded test set & new images \\
+\midrule
+run (before cleaning) & 93.3\% & 93.2\% (41/44) \\
+clean (after cleaning) & 94.4\% & 95.5\% (42/44) \\
+\bottomrule
+\end{tabular}
+\end{center}
+On the new images the cleaned model gets all 16 Nike and all 5 Vans right and 21 of 23 Converse (2 called Nike). The checker warns that the classes have 23, 16 and 5 images, so a model could score well by always guessing the big class.
 
-\fillin{What is different about your new images: background, lighting, angle,
-distance, what else is in the frame.}
+\subsection*{The confident mistakes}
+\sidebyside{figures/mistake_1.jpg}{IMG-20261013-WA0008: said Nike (58\%), really Converse}
+           {figures/mistake_2.jpg}{IMG-20261013-WA0016: said Nike (49\%), really Converse}
+There were only two mistakes on the 44 new photos, not five. Both were Converse photos that the model called Nike: IMG-20261013-WA0008.jpg (58\% sure) and IMG-20261013-WA0016.jpg (49\% sure). In both the shoe lies on its side, so the sole is seen at a steep angle and the pattern is squeezed. Both show a thick white wavy midsole with long curved lines, which resembles the clean lines and curves of the Nike category, and the diamond pattern is only a small part of the picture. Both also have large wood and furniture backgrounds. These are guesses from looking at the pictures, not tested.
+
+\subsection*{What is different about my new images}
+They are a bit lower in quality, as they were taken without the intent of posting, so the light is not the best, it is very natural and not set up. Angles are diverse as we have the flexibility of taking pictures in different angles. Hands are visible in many pictures as the person is holding them to take the picture.
 
 % ---------------------------------------------------------------------------
 \section*{Problem 6. The demo}
+Address: \url{https://isabel-mg.github.io/mas1004-assignment1/} and the code is at \url{https://github.com/Isabel-mg/mas1004-assignment1}. The model runs inside the page, so there is no server and no photo leaves the machine. The badge is green: the self-test on the page says the browser agrees with Python (largest gap 0.0000), and \texttt{docs/model.onnx} is 44.8 MB with 11,178,051 parameters. The page shows the model of the run tagged \texttt{clean}.
 
-Address: \url{https://isabel-mg.github.io/mas1004-assignment1/} and the code is at
-\url{https://github.com/Isabel-mg/mas1004-assignment1}. The model runs inside the page, so there is
-no server and no photo leaves the machine. The badge is green: the self-test that the export wrote
-reports that the page and Python agree with a largest gap of 0.0000, and
-\texttt{docs/model.onnx} is 44.8 MB with 11,178,051 parameters.
+The page has no ``none of these'' answer. It always shows the probabilities of my three classes.
 
-The page has no "none of these" answer. It always returns the single class with the highest
-probability, whatever you show it, so a picture of something else comes back as whichever of the
-three sole patterns is nearest.
-\fillin{Write here what you actually saw when you showed the live page something that is none of
-the three categories, and the confidence it printed; this has to be your own test, on your phone.}
+It was not able to be very certain compared to actual shoe soles. I tried with a shirt and a skirt. It was not able to have more than 60\% on a class. I also tried with other soles of different shoes, those in comparison went up to 65\% or so but never exceeded 70\% unless the shape was very similar. The one class that did get confused with one of the other soles I tried with was Vans, but I purposely chose a very similar sole.
+
+For six other images that I downloaded (the first three are soles of another brand, the last three are patterns), the model gave these answers (printed by code, \texttt{outputs/problem7\_answers.txt}):
+
+\picturefile{figures/p7_other_images.png}
 
 % ---------------------------------------------------------------------------
 \section*{Problem 7. What the model looks at}
+I made 11 kinds of change to my own new photos. I asked Claude to make the copies, and I chose every change and every guess myself. Six photos (two per category) were used for ten of the changes, and ten photos (two Converse, four Nike, four Vans) for the shuffle. Under each picture the answer of the exported model and its confidence are printed, green if the answer is right and red if it is wrong; the same numbers are in the table in the appendix. The copies are in \texttt{data/changed/}.
 
-% Copy this subsection once for every guess.
-\subsection*{Guess 1}
+My requests to the agent, word for word:
+\begin{enumerate}
+  \item can you make a new folder with the images i took and have them modified? first change the color for some, then for orders and a grid, for others extreme zoom in, and for others something else that might help me find the guess. choose a few images and have the change for all so i can try the same image but with the different changes. for example image 001 has 4 versions, the gray, the grid, the zoom, etc. i also downloaded these images from other soles to see how it works.
+  \item 1. just a grid, like when you take pictures and you have a 3x3 grid, 2. one can be blurred, and have another one with only the back of the sole and other with only the front of the sole, the middle is not visible.
+  \item can you make more changed version with a smaller grid? so more of the image is covered with it and with a lor of small squares.
+  \item i have 3 more changes i want to try and test: negative or inverted contrast and maybe the model relies on specific way shadows fall, not color but shadows and highlights. scale, i want to see if it can recognize it even with different ratio and proportions, can we stretch the image by 50\%. and the last one i want to test shape vs texture and see if it relies on the texture or the flat shapes, so can you convert it into edge-detected images so the background and surface textures are completely white/black, leaving only the literal linework of the diamond, circle, or honeycomb patterns.
+  \item 1 estra change trial: Cut the image into a 4x4 grid of squares, shuffle the positions of the squares randomly, and stitch them back together so the sole layout makes no sense, but the local textures are perfectly intact.
+  \item for this random trial can you add 2 more nike pictures and 2 more vans pictures?
+\end{enumerate}
 
-\fillin{The guess, and what in your images or your model's mistakes made you
-think of it.}
+\subsection*{Guess 1: Blur}
+\textbf{Guess and why.} For the blurred images I don't think it will work at all, the grid and shapes of the sole will not be visible and i dont think just color will work, except maybe with the nike, as they are different color.
 
-\fillin{The change you chose, and why it tests the guess.}
+\textbf{What I did and what I saw.} For the blur tests, they all failed except for the Nike pictures, although one has very low confidence. I believe it's because the shape is not clearly visible, and the model does not rely much on color and probably bases its guesses on shape.
 
-My request to the agent, word for word:
-\begin{quote}
-\fillin{the request}
-\end{quote}
+\picturefile{figures/p7_blur.png}
 
-% One \sidebyside for every image you changed.
-\sidebyside{figures/guess1_original_1.jpg}{\fillin{original: the model's answer}}
-           {figures/guess1_changed_1.jpg}{\fillin{changed: the model's answer}}
+\textbf{Check against the code output.} 4 of the 6 blurred photos were answered wrongly (both Converse photos as Vans, both Vans photos as Nike). Both Nike photos were still answered Nike, one with only 37.7\%.
 
-\fillin{What the results say about the guess.}
+\subsection*{Guess 2: Grayscale}
+\textbf{Guess and why.} I will try with the grayscale pictures to confirm that color is not a factor for the guesses after checking blurred didn't work.
+
+\textbf{What I did and what I saw.} Grayscale worked just fine. The weakest guess was Vans with 83.4\%. With this I can see it does not rely on color.
+
+\picturefile{figures/p7_gray.png}
+
+\textbf{Check against the code output.} All 6 grayscale photos were answered correctly, and the weakest was Vans at 83.4\%.
+
+\subsection*{Guess 3: The 3x3 grid}
+\textbf{Guess and why.} I will try with the grid, i think it will confuse the model and the guesses might not be correct and we are changing the shape of the sole.
+
+\textbf{What I did and what I saw.} The grid was not enough to confuse the model, but it did confuse one Nike shoe with Converse. I later tried a much smaller grid, instead of the 3x3. With this I am thinking maybe straight lines confuse the Nike guesses.
+
+\picturefile{figures/p7_grid_3x3.png}
+
+\textbf{Check against the code output.} 5 of 6 photos were answered correctly (92.1\% to 99.8\%). One Nike photo (1791805866921) was answered Converse with 52.7\%, with Nike at 43.8\%.
+
+\subsection*{Guess 4: Extreme zoom}
+\textbf{Guess and why.} I will try with extreme zoom, i think the model relies on recognizing the pattern on various areas, instead of one very specific one. i expect it to still guess the right sole but not with much confidence.
+
+\textbf{What I did and what I saw.} Confidence was high in most of the pictures, meaning that even with zoom Converse and Vans were guessed correctly, so it does not need a global view. For Nike, as long as certain curved lines are still visible, it can also be guessed.
+
+\picturefile{figures/p7_zoom_extreme.png}
+
+\textbf{Check against the code output.} All 6 photos were answered correctly, with confidences from 78.0\% to 99.5\%.
+
+\subsection*{Guess 5: Only a small part (first or last third)}
+\textbf{Guess and why.} Similar to the zoom in, I will try with just a very small part of it. Now I expect good guesses even with the small part uncovered.
+
+\textbf{What I did and what I saw.} With the gray box covering, depending on what was left visible, it determined the confidence and classification. For one of the Nike images that it did not guess, it was mainly because there were no curves visible. For the others, the clearer the pattern, the better the confidence. The wrong answer appeared only when the visible part could be mistaken for another pattern because of the light, the part shown or the angle.
+
+\picturefile{figures/p7_first_third_only.png}
+
+\picturefile{figures/p7_last_third_only.png}
+
+\textbf{Check against the code output.} Of the 12 answers, 11 were right. One Nike photo was answered Converse (43.0\%) when only its last third was visible. Confidences ranged from 36.8\% to 98.5\%.
+
+\subsection*{Guess 6: The finer 12x12 grid}
+\textbf{Guess and why.} With the larger grid, my guess is that it will get confused and not guess the right pattern and go for a different sole or very low confidence.
+
+\textbf{What I did and what I saw.} All results said it was the Vans honeycomb. This makes sense as the grid might look similar to the shape of the honeycomb.
+
+\picturefile{figures/p7_grid_12x12.png}
+
+\textbf{Check against the code output.} All 6 photos were answered Vans, with 86.4\% to 98.4\%.
+
+\subsection*{Guess 7: Inverted colors}
+\textbf{Guess and why.} I will try with inverted colors, I think it will still get it right and accurate.
+
+\textbf{What I did and what I saw.} As suspected, it didn't change the result much, except for one where the light changes a lot and the sole was less clear and a bit blurry.
+
+\picturefile{figures/p7_invert.png}
+
+\textbf{Check against the code output.} All 6 inverted photos were answered correctly. The lowest was a Vans photo at 57.1\%, against 96.5\% for its original.
+
+\subsection*{Guess 8: Stretched by 50\%}
+\textbf{Guess and why.} Same for the stretch, I think it will get it right, just trying to discard other options.
+
+\textbf{What I did and what I saw.} Yes, results were good and guesses high.
+
+\picturefile{figures/p7_stretch_150.png}
+
+\textbf{Check against the code output.} All 6 stretched photos were answered correctly, with 74.0\% to 99.8\%.
+
+\subsection*{Guess 9: Edges only}
+\textbf{Guess and why.} It will guess with the edges, and I think that is what it mainly uses.
+
+\textbf{What I did and what I saw.} I think I am pretty sure it uses this, as the images with less clear edges had lower confidence and even one where the edges were very confusing. It got the wrong guess.
+
+\picturefile{figures/p7_edges.png}
+
+\textbf{Check against the code output.} 5 of 6 photos were answered correctly (70.3\% to 99.3\%). One Nike photo (1791805866921) was answered Converse with 56.3\%.
+
+\subsection*{Guess 10: Other images with similar patterns}
+\textbf{Guess and why.} I will try images with similar patterns and textures to see if it will get it right and confirm the edges hypothesis.
+
+\textbf{What I did and what I saw.} It got Converse and Vans correct, especially Vans. For Nike, even though I found a similar shape, it did not guess it right.
+
+\picturefile{figures/p7_other_images.png}
+
+\textbf{Check against the code output.} The dartboard and the tiles were answered Converse (68.4\% and 62.1\%), the fence Vans (92.7\%). The three soles of another brand were answered Nike (55.6\%), Vans (99.3\%) and Nike (59.5\%). None of the pattern images was answered Nike.
+
+\subsection*{Guess 11: Shuffled 4x4 tiles}
+\textbf{Guess and why.} I will do one more trial to check what happens with Nike shoes. I will shuffle a 4x4 grid to see if Nike also relies on the same things.
+
+\textbf{What I did and what I saw.} Again, Converse and Vans were guessed mostly right and with high confidence. One Vans and all Nike pictures were wrong. With this I can come to the conclusion that Vans and Converse rely on local texture or the edges of the geometric shape. Also, when I tried one of the New Balance shoes with a similar sole, it guessed Vans, so that is another confirmation. That is also the reason why they can also get confused between each other sometimes. Nike relies on global structure, the circles and their position. If the sole is changed, it is easier to get confused.
+
+\picturefile{figures/p7_shuffle_4x4.png}
+
+\textbf{Check against the code output.} The two Converse photos were answered Converse (87.1\%, 86.2\%). Three of the four Vans photos were answered Vans (96.3\%, 86.1\%, 83.6\%) and one Vans photo (1791811068662) was answered Converse (50.7\%). All four Nike photos were answered Converse (56.4\% to 93.7\%).
 
 \subsection*{What I now think the model uses}
-\fillin{What you now think the model uses to tell your categories apart, and
-how sure you are.}
+I am around 90\% sure it does not rely on colors, lighting, or overall shoe context. Instead it relies on local texture detectors for Vans and Converse, looking for specific edges and line intersections to identify either diamond-shaped for Converse or hexagonal for Vans. Because it looks at local patches, it can identify even when the image is shuffled or zoomed in, but it gets confused with everyday objects with similar texture. For Nike, it relies on global geometry. It searches for continuous structure, which is the reason why it passed trial 10 but not trial 11. It is also the reason why it passed the zoom in but not the shuffled one: it is looking for continuous curved lines and continuous geometry, which the zoom in keeps intact, unlike the shuffling.
+
+Every conclusion rests on six photos per change (ten for the shuffle), so it is an indication, not a proof. The 10 original photos were all answered correctly by the model before any change (80.7\% to 100.0\%).
 
 % ---------------------------------------------------------------------------
-\section*{Appendix. Output of check.py}
+\section*{Appendix. Output of the checks}
+\subsection*{check.py}
 \outputfile{outputs/check.txt}
+\subsection*{Model answers for every original and changed image}
+\outputfile{outputs/problem7_answers.txt}
+\subsection*{Cleaning rule}
+\outputfile{outputs/rule.txt}
 
 \end{document}

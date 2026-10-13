@@ -1,30 +1,30 @@
 reading C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\data\clean
-204 images, 3 classes, read in 5 s
-  converse_diamond_sole_shape 62
-  nike_air_force_circular_sole_shape 67
-  vans_honeycomb_sole_shape 75
-training on 164, testing on 40
+268 images, 3 classes, read in 4 s
+  converse_diamond_sole_shape 81
+  nike_air_force_circular_sole_shape 94
+  vans_honeycomb_sole_shape 93
+training on 214, testing on 54
 model has 11,178,051 parameters, 11,178,051 of them will be trained
-epoch 1/10  train loss 0.9761  train acc 0.524  test loss 0.5758  test acc 0.725
-epoch 2/10  train loss 0.1979  train acc 0.957  test loss 0.4098  test acc 0.850
-epoch 3/10  train loss 0.0950  train acc 0.982  test loss 0.3643  test acc 0.850
-epoch 4/10  train loss 0.0400  train acc 0.994  test loss 0.4004  test acc 0.825
-epoch 5/10  train loss 0.0275  train acc 1.000  test loss 0.4747  test acc 0.850
-epoch 6/10  train loss 0.0188  train acc 1.000  test loss 0.4743  test acc 0.850
-epoch 7/10  train loss 0.0211  train acc 1.000  test loss 0.4641  test acc 0.825
-epoch 8/10  train loss 0.0201  train acc 1.000  test loss 0.4759  test acc 0.825
-epoch 9/10  train loss 0.0259  train acc 0.994  test loss 0.5364  test acc 0.800
-epoch 10/10  train loss 0.0639  train acc 0.994  test loss 0.5280  test acc 0.800
+epoch 1/10  train loss 0.7678  train acc 0.664  test loss 0.1790  test acc 0.963
+epoch 2/10  train loss 0.0664  train acc 1.000  test loss 0.0990  test acc 0.963
+epoch 3/10  train loss 0.0238  train acc 1.000  test loss 0.1011  test acc 0.963
+epoch 4/10  train loss 0.0101  train acc 0.995  test loss 0.1104  test acc 0.963
+epoch 5/10  train loss 0.0063  train acc 1.000  test loss 0.1173  test acc 0.963
+epoch 6/10  train loss 0.0050  train acc 1.000  test loss 0.1275  test acc 0.944
+epoch 7/10  train loss 0.0052  train acc 1.000  test loss 0.1388  test acc 0.944
+epoch 8/10  train loss 0.0022  train acc 1.000  test loss 0.1323  test acc 0.944
+epoch 9/10  train loss 0.0017  train acc 1.000  test loss 0.1343  test acc 0.944
+epoch 10/10  train loss 0.0014  train acc 1.000  test loss 0.1316  test acc 0.944
 
-trained in 1.5 minutes
+trained in 1.1 minutes
 train accuracy 100.0%
-test  accuracy 80.0%
+test  accuracy 94.4%
 wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\clean_curves.png
 wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\clean_confusion.png
 wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\clean_worst.png
 wrote C:\Users\isamg\Documents\Mas1004 Files\Assignment 1\mas1004-assignment1\results\clean_model.pt
 
 One line for your experiment table:
-| clean | ImageNet | all layers | 10 | 0.0001 | 11,178,051 | 100.0% | 80.0% |
+| clean | ImageNet | all layers | 10 | 0.0001 | 11,178,051 | 100.0% | 94.4% |
 
 To put this model on your web page: python src/export_web.py --tag clean

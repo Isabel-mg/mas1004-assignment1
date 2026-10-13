@@ -1,12 +1,10 @@
 class                    downloaded  removed   kept  other
-converse_diamond_sole_shape        150       88     62      0
-nike_air_force_circular_sole_shape        150       83     67      0
-vans_honeycomb_sole_shape        150       75     75      0
+converse_diamond_sole_shape        700      619     81      0
+nike_air_force_circular_sole_shape        452      358     94      0
+vans_honeycomb_sole_shape        427      334     93      0
 
 reasons
-   186  no-tread
-    28  not-a-photo
-    22  duplicate
-    10  wrong-object
+  1291  not-kept
+    20  duplicate
 
 "other" is images that are in data/raw but neither in data/clean nor removed with `clean.py remove`, for example ones you deleted by hand. Their reasons are not recorded.
