@@ -118,13 +118,15 @@ Three kinds of junk, one picture of each (chosen by Claude from the removed imag
 
 I chose to describe the rule instead of estimating a reason for each image. The removal table shows 1,291 removed as "not-kept" (I chose the images to keep by my rule, so a reason for each removed image was not recorded) and 20 as "duplicate". The report explains the rule instead.
 
+\paragraph{What the removed images looked like.} I did not record a reason for each removed image, so I looked at a random sample of 30 removed images per category (90 in all, drawn with a fixed random seed; the sheets are in \texttt{results/cleaning/sample\_removed/}). This is a description, not a count. For Converse, most are whole shoes with no sole, and maybe one repeated image (I am not sure about 0308). For Nike it is the same, plus some that are not an actual photo but a drawing of the shoe and sole. For Vans, some show soles but in other contexts, and a lot are whole shoes. Image 0308 of Converse is not a near copy of any kept image: the highest similarity to a kept image is 0.80, and copies start above 0.95. So the sample contains no confirmed duplicate.
+
 \subsection*{Near copies}
 \texttt{clean.py suspects} listed 181 pairs of near copies (similarity above 0.95). Joined together, they form 96 groups covering 240 images; the biggest group has 11 images. That run was made on the 1,168 images that existed before I added 411 Converse images. In my keep lists I then found 20 more duplicates, which I removed (4 Converse, 11 Nike, 5 Vans) so that only one picture of each stayed. The pairs from the suspects run are drawn here:
 
 \picturefile{figures/copies.png}
 
 \subsection*{The suspects}
-I deleted almost all except for one. There were a lot of images deleted after cleaning as many downloaded were not right. from 400 it went down to just a bit less than 100 because most of it was junk, very easy to confuse with the whole shoe, or many images with watermarks. Numbers from the files: the first suspects run listed the 20 most suspicious images in each class, and all 20 in each class (Converse, Nike, Vans) ended up removed (I kept Converse image 0091. It is not among those 20: the 20 Converse suspects were 0068, 0079, 0114, 0144, 0040, 0127, 0229, 0122, 0024, 0029, 0011, 0104, 0010, 0233, 0211, 0142, 0126, 0249, 0118 and 0065. Image 0091 ranked 23rd, just outside the top 20, and the model gave it only a 14.9\% chance of being Converse, so it is a suspect that I kept because it shows the Converse pattern). That run was made before the extra 411 Converse images were added, so for Converse it covers the first 289 images. It also listed 181 near-copy pairs over all images. In my keep lists I found 20 duplicates, which were removed (4 Converse, 11 Nike, 5 Vans).
+I did not miss anything: I saw the suspects list first and it was correct. But when I looked at the cleaned data for the first time, I realized there was still a lot of junk, so I decided to choose only the correct images instead. The suspects list mainly helped with copies of pictures. Numbers from the files: the first suspects run listed the 20 most suspicious images in each class, and all 20 in each class (Converse, Nike, Vans) ended up removed (I kept Converse image 0091. It is not among those 20: the 20 Converse suspects were 0068, 0079, 0114, 0144, 0040, 0127, 0229, 0122, 0024, 0029, 0011, 0104, 0010, 0233, 0211, 0142, 0126, 0249, 0118 and 0065. Image 0091 ranked 23rd, just outside the top 20, and the model gave it only a 14.9\% chance of being Converse, so it is a suspect that I kept because it shows the Converse pattern). That run was made before the extra 411 Converse images were added, so for Converse it covers the first 289 images. It also listed 181 near-copy pairs over all images. In my keep lists I found 20 duplicates, which were removed (4 Converse, 11 Nike, 5 Vans).
 
 \subsection*{Before and after cleaning}
 \outputfile{outputs/compare.txt}
@@ -170,6 +172,7 @@ On the new images the cleaned model gets all 16 Nike and all 5 Vans right and 21
            {figures/mistake_2.jpg}{IMG-20261013-WA0016: said Nike (49\%), really Converse}
 There were only two mistakes on the 44 new photos, not five. Both were Converse photos that the model called Nike: IMG-20261013-WA0008.jpg (58\% sure) and IMG-20261013-WA0016.jpg (49\% sure). In both the shoe lies on its side, so the sole is seen at a steep angle and the pattern is squeezed. Both show a thick white wavy midsole with long curved lines, which resembles the clean lines and curves of the Nike category, and the diamond pattern is only a small part of the picture. Both also have large wood and furniture backgrounds. These are guesses from looking at the pictures, not tested.
 
+
 \subsection*{What is different about my new images}
 They are a bit lower in quality, as they were taken without the intent of posting, so the light is not the best, it is very natural and not set up. Angles are diverse as we have the flexibility of taking pictures in different angles. Hands are visible in many pictures as the person is holding them to take the picture.
 
@@ -188,6 +191,8 @@ For six other images that I downloaded (the first three are soles of another bra
 % ---------------------------------------------------------------------------
 \section*{Problem 7. What the model looks at}
 I made 11 kinds of change to my own new photos. I asked Claude to make the copies, and I chose every change and every guess myself. Six photos (two per category) were used for ten of the changes, and ten photos (two Converse, four Nike, four Vans) for the shuffle. Under each picture the answer of the exported model and its confidence are printed, green if the answer is right and red if it is wrong; the same numbers are in the table in the appendix. The copies are in \texttt{data/changed/}.
+
+\paragraph{How to read these results.} In each guess below, ``Check against the code output'' states what the model answered, and these are observations. What I think they mean is my interpretation, and it is a hypothesis, not a proof: every change uses only six photos (ten for the shuffle), so a result can suggest a pattern but cannot establish a general rule.
 
 My requests to the agent, word for word:
 \begin{enumerate}
@@ -300,8 +305,17 @@ My requests to the agent, word for word:
 
 \textbf{Check against the code output.} The two Converse photos were answered Converse (87.1\%, 86.2\%). Three of the four Vans photos were answered Vans (96.3\%, 86.1\%, 83.6\%) and one Vans photo (1791811068662) was answered Converse (50.7\%). All four Nike photos were answered Converse (56.4\% to 93.7\%).
 
+\subsection*{Limits of these tests}
+These limits come from how the changes were made, and they apply to the conclusions below.
+\begin{itemize}
+  \item The grids, the inversion and the zoom change several things at once. A 12x12 grid adds many straight edges as well as covering part of the picture, so a result cannot say which of the two caused it. Inverting the colors changes colour, light and shadow together; the grayscale copies keep the light and shadow and remove the colour, which is the closest comparison I have.
+  \item The model sees only the middle square of each photo after resizing. For the ``first third only'' and ``last third only'' copies, only 24\% to 63\% of the visible strip is inside that square (24\% for the two tall Converse photos, 48\% for three others and 63\% for the Nike photo 1791805866921). The grey part is also seen by the model.
+  \item The shuffle cuts tall rectangles, not squares, and mixes background tiles with sole tiles, so which sole tiles end up in the middle square affects the answer.
+  \item Six photos per change (two per category) is a small sample, and the Vans class has only five new photos in total.
+\end{itemize}
+
 \subsection*{What I now think the model uses}
-I am around 90\% sure it does not rely on colors, lighting, or overall shoe context. Instead it relies on local texture detectors for Vans and Converse, looking for specific edges and line intersections to identify either diamond-shaped for Converse or hexagonal for Vans. Because it looks at local patches, it can identify even when the image is shuffled or zoomed in, but it gets confused with everyday objects with similar texture. For Nike, it relies on global geometry. It searches for continuous structure, which is the reason why it passed trial 10 but not trial 11. It is also the reason why it passed the zoom in but not the shuffled one: it is looking for continuous curved lines and continuous geometry, which the zoom in keeps intact, unlike the shuffling.
+Based on my trials, I am around 90\% confident that color, lighting, and overall shoe context are not the main factors behind the model's predictions. Instead, the results suggest that it may rely on local texture patterns to distinguish Vans and Converse. For example, it could be detecting features such as edges and line intersections in the diamond-shaped Converse pattern or the hexagonal Vans pattern. This would explain why it can still recognize these shoes in zoomed-in or shuffled images, but sometimes confuses them with everyday objects that have similar textures, like a metal mesh fence. Nike appears to behave differently. Its predictions seem more dependent on the overall structure of the sole, particularly continuous curved lines and larger geometric patterns. This could explain why zooming in did not prevent correct classification, while shuffling the image tiles caused more mistakes by breaking the continuity between parts of the sole. The difference between trials 10 and 11 also suggests that preserving local patterns alone may not be enough for Nike classification.
 
 Every conclusion rests on six photos per change (ten for the shuffle), so it is an indication, not a proof. The 10 original photos were all answered correctly by the model before any change (80.7\% to 100.0\%).
 

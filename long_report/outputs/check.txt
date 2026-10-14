@@ -44,7 +44,6 @@ Your images from a new source  (C:\Users\isamg\Documents\Mas1004 Files\Assignmen
 Summary
 -------
   nothing is broken
-  2 thing(s) worth a sentence in your report:
+  1 thing(s) worth a sentence in your report:
     - the biggest class has 23 images and the smallest has 5. A model can score well just by always guessing the big class.
-    - docs/model.onnx has changed since your last commit. The published page still shows the old model.
 
