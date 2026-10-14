@@ -210,15 +210,33 @@ $("tabDraw").onclick = () => showPanel("Draw");
 
 // Webcam
 let cameraRunning = false;
+let cameraStream = null;
+function stopCamera() {
+  cameraRunning = false;
+  if (cameraStream) {
+    cameraStream.getTracks().forEach((track) => track.stop());
+    cameraStream = null;
+  }
+  const video = $("video");
+  video.pause();
+  video.srcObject = null;
+  $("camStart").disabled = false;
+  $("camStart").textContent = "Turn the camera on";
+  $("camStop").disabled = true;
+  if (model) drawBars(model.labels.map(() => 0));
+}
+$("camStop").onclick = stopCamera;
 $("camStart").onclick = async () => {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    cameraStream = stream;
     const video = $("video");
     video.srcObject = stream;
     await video.play();
     cameraRunning = true;
     $("camStart").disabled = true;
     $("camStart").textContent = "Camera is on";
+    $("camStop").disabled = false;
     const tick = async () => {
       if (!cameraRunning) return;
       await classify(video);
@@ -310,8 +328,8 @@ async function start() {
       executionProviders: ["wasm"],
     });
 
-    document.title = model.labels.join(" / ");
-    $("title").textContent = model.labels.join("  ·  ");
+    document.title = "Assignment 1 by 20231987";
+    $("title").textContent = "Assignment 1 by 20231987";
     $("subtitle").textContent =
       `${model.labels.length} classes, ResNet18 on ` +
       `${model.input.crop}x${model.input.crop} colour input, ` +
