@@ -244,13 +244,29 @@ $("camStart").onclick = async () => {
     };
     tick();
   } catch (error) {
-    alert(
-      "The browser would not give us the camera.\n\n" +
-      "Cameras only work on https:// pages and on http://localhost. " +
-      "If you opened this file by double clicking it, run " +
-      "`python -m http.server` in this folder and open " +
-      "http://localhost:8000 instead."
-    );
+    stopCamera();   // let go of the camera if it had already been opened
+    const name = (error && error.name) || "Error";
+    let why;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      why = "This browser has no camera support for web pages. If you opened " +
+            "the page inside another app (a chat app, Instagram, an email app), " +
+            "open it in Safari or Chrome instead.";
+    } else if (name === "NotAllowedError" || name === "SecurityError") {
+      why = "The camera permission was not given. Allow the camera for this " +
+            "site in your browser settings, reload the page and try again. If " +
+            "you opened the page inside another app, open it in Safari or " +
+            "Chrome instead.";
+    } else if (name === "NotFoundError" || name === "OverconstrainedError") {
+      why = "No camera was found on this device.";
+    } else if (name === "NotReadableError") {
+      why = "The camera is being used by another app. Close that app and try again.";
+    } else if (name === "AbortError" || name === "NotSupportedError") {
+      why = "The browser could not show the camera picture. Reload the page " +
+            "and try again, or open it in Safari or Chrome.";
+    } else {
+      why = "The camera could not be started.";
+    }
+    alert(why + "\n\n(" + name + (error && error.message ? ": " + error.message : "") + ")");
   }
 };
 
